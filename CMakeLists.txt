@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.0)
 project (TunTest)
 
-set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -g3")
 
 find_package(Boost REQUIRED COMPONENTS system)
 if(NOT Boost_FOUND)
@@ -11,6 +11,8 @@ endif()
 file(GLOB src_group
     src/*.cpp
     src/*.h
+    cjdns-code/*.c
+    cjdns-code/*.h
 )
 
 add_executable(TunTest ${src_group})
