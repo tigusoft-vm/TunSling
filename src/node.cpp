@@ -27,9 +27,11 @@ node node::node_factory() {
     node node_product;
     node_product.m_io_service = std::make_unique<boost::asio::io_service>();
     node_product.m_crypto = std::make_unique<cX_salsa_20_wrapper>();
-    auto stream_descriptor = std::make_unique<boost::asio::posix::stream_descriptor>(*node_product.m_io_service);
+    assert(node_product.m_io_service != nullptr);
+    auto stream_descriptor = std::make_unique<boost::asio::posix::stream_descriptor>(*(node_product.m_io_service));
     node_product.m_tun = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
-    boost::asio::ip::udp::socket socket(*node_product.m_io_service);
+    assert(stream_descriptor == nullptr);
+    boost::asio::ip::udp::socket socket(*(node_product.m_io_service));
     node_product.m_udp = std::make_unique<cAsio_udp>(std::move(socket));
     return node_product;
 }
