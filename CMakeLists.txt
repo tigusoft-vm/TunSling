@@ -1,11 +1,18 @@
 cmake_minimum_required (VERSION 3.0)
 project (TunTest)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
 set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=c++14)
 
 find_package(Boost REQUIRED COMPONENTS system)
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "Boost not found!!!")
+endif()
+
+find_package(Sodium REQUIRED COMPONENTS system)
+if(NOT Sodium_FOUND)
+    message(FATAL_ERROR "Sodium not found!!!")
 endif()
 
 file(GLOB src_group
@@ -14,8 +21,8 @@ file(GLOB src_group
 )
 
 add_executable(TunTest ${src_group})
-target_link_libraries(TunTest ${Boost_LIBRARIES})
-target_include_directories(TunTest PUBLIC ${Boost_INCLUDE_DIRS})
+target_link_libraries(TunTest ${Boost_LIBRARIES} ${SODIUM_LIBRARY})
+target_include_directories(TunTest PUBLIC ${Boost_INCLUDE_DIRS} ${SODIUM_INCLUDE_DIR})
 
 if(UNIX)
     target_link_libraries(TunTest pthread)
