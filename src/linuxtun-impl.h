@@ -41,4 +41,16 @@ void linuxTun<TStreamDescriptor>::set_ip(const boost::asio::ip::address & addr, 
     std::cout << "Configuring tuntap options - done\n";
 }
 
+template <class TStreamDescriptor>
+size_t linuxTun<TStreamDescriptor>::read_from_tun(unsigned char * data, size_t data_size) {
+    boost::system::error_code ec;
+    return m_tun_stream->read_some(boost::asio::buffer(data, data_size), ec);
+}
+
+template <class TStreamDescriptor>
+size_t linuxTun<TStreamDescriptor>::send_to_tun(const unsigned char * data, size_t data_size) {
+    boost::system::error_code ec;
+    return m_tun_stream->write_some(boost::asio::buffer(data, data_size), ec);
+}
+
 #endif // LINUXTUNIMPL_H

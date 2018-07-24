@@ -9,9 +9,12 @@
 
 class node final {
 	public:
-		node();
-		void run();
+        void run();
+        static node node_factory();
+        node(node &&) = default;
 	private:
+        node() = default;
+        std::unique_ptr<boost::asio::io_service> m_io_service;
 		std::unique_ptr<iCrypto> m_crypto;
 		std::unique_ptr<iTun> m_tun;
 		std::unique_ptr<iUdp> m_udp;
