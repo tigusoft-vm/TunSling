@@ -14,7 +14,7 @@ linuxTun<TStreamDescriptor>::linuxTun(std::unique_ptr<TStreamDescriptor> && stre
     m_tun_stream(std::move(stream))
 {
     assert(stream == nullptr);
-    if (m_tun_stream == nullptr) throw std::invalid_argument("stream i nullptr");
+    if (m_tun_stream == nullptr) throw std::invalid_argument("stream is nullptr");
     if (m_tun_fd == -1) throw std::runtime_error("open /dev/net/tun error");
     m_tun_stream->assign(m_tun_fd);
     assert(m_tun_stream != nullptr);

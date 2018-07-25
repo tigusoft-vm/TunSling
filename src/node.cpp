@@ -12,6 +12,7 @@ void node::run() {
     boost::asio::ip::address dst_addr = boost::asio::ip::address::from_string("192.168.1.106");
     assert(m_tun != nullptr);
     assert(m_io_service != nullptr);
+    m_tun->set_ip(boost::asio::ip::address::from_string("fd44:1111:2222:3333:4444:5555:6666:7777"), 1500);
 	while (true) {
         size_t tun_read_size = m_tun->read_from_tun(buffer.data(), buffer.size());
         size_t encypted_message_size =

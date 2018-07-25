@@ -14,7 +14,7 @@ class linuxTun final : public iTun {
         size_t send_to_tun(const unsigned char * data, size_t data_size) override;
     private:
         const int m_tun_fd; ///< the unix file descriptor. -1 is closed (this should not happen in correct object)
-        std::unique_ptr<TStreamDescriptor> && m_tun_stream;
+        std::unique_ptr<TStreamDescriptor> m_tun_stream;
 };
 
 #include "linuxtun-impl.h"
