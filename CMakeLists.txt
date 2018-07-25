@@ -4,13 +4,14 @@ project (TunTest)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -g0 -O0 -march=native")
+add_definitions("-DNDEBUG")
 
 find_package(Boost REQUIRED COMPONENTS system)
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "Boost not found!!!")
 endif()
 
-find_package(Sodium REQUIRED COMPONENTS system)
+find_package(Sodium REQUIRED)
 if(NOT Sodium_FOUND)
     message(FATAL_ERROR "Sodium not found!!!")
 endif()
