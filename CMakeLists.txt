@@ -3,7 +3,7 @@ project (TunTest)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -g3 -O0")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -g0 -O0 -march=native")
 
 find_package(Boost REQUIRED COMPONENTS system)
 if(NOT Boost_FOUND)
