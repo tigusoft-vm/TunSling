@@ -1,13 +1,13 @@
 #include "node.h"
 
 #include <array>
-#include "cX_salsa_20_wrapper.h"
+#include "cSecretbox_wrapper.h"
 #include "linuxtun.h"
 #include "cAsio_udp.h"
 
 void node::run() {
     std::array<unsigned char, 9000> buffer;
-    std::array<unsigned char, crypto_stream_KEYBYTES> crypto_key;
+	std::array<unsigned char, crypto_secretbox_KEYBYTES> crypto_key;
     crypto_key.fill(0b10101010);
     boost::asio::ip::address dst_addr = boost::asio::ip::address::from_string("192.168.1.66");
     assert(m_tun != nullptr);
@@ -30,7 +30,7 @@ void node::run() {
 node node::node_factory() {
     node node_product;
     node_product.m_io_service = std::make_unique<boost::asio::io_service>();
-    node_product.m_crypto = std::make_unique<cX_salsa_20_wrapper>();
+	node_product.m_crypto = std::make_unique<cSecretbox_wrapper>();
     assert(node_product.m_io_service != nullptr);
     auto stream_descriptor = std::make_unique<boost::asio::posix::stream_descriptor>(*(node_product.m_io_service));
     node_product.m_tun = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
