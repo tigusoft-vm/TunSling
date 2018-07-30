@@ -16,7 +16,7 @@ void node::run() {
 	while (true) {
         std::vector<unsigned char> buffer(9000);
         size_t tun_read_size = m_tun->read_from_tun(buffer.data(), buffer.size());
-        std::thread thr([=,crypto_key,tun_read_size,this,buffer{move(buffer)}]() mutable {
+        std::thread thr([=,buffer{move(buffer)}]() mutable {
                 size_t encypted_message_size =
                 m_crypto->encrypt(
                           buffer.data(), tun_read_size,
