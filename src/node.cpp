@@ -16,7 +16,7 @@ void node::run() {
 	while (true) {
         std::vector<unsigned char> buffer(9000);
         size_t tun_read_size = m_tun->read_from_tun(buffer.data(), buffer.size());
-        std::thread thr([=,buffer{move(buffer)}]() mutable {
+        m_thread_pool->addJob([=,buffer{move(buffer)}]() mutable {
                 size_t encypted_message_size =
                 m_crypto->encrypt(
                           buffer.data(), tun_read_size,
@@ -25,12 +25,6 @@ void node::run() {
                 std::lock_guard<std::mutex> lg(m_udp_mutex);
                 size_t udp_sended = m_udp->send(buffer.data(), encypted_message_size, dst_addr);
         });
-        thr.detach();
-//        std::cout << "readed from tun " << tun_read_size << "B\n";
-        
-//        std::cout << "encrypted\n";
-        
-//        std::cout << "sended via udp " <<  udp_sended << "\n";
     }
 }
 
@@ -45,6 +39,7 @@ std::unique_ptr<node> node::node_factory() {
     boost::asio::ip::udp::socket socket(*(node_product->m_io_service));
     socket.open(boost::asio::ip::udp::v4());
     node_product->m_udp = std::make_unique<cAsio_udp>(std::move(socket));
+    node_product->m_thread_pool = std::make_unique<ThreadPool>(2);
     return node_product;
 }
 

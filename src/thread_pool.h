@@ -40,7 +40,7 @@ void ThreadPool::addJob(Func &&f) {
     auto & job = m_vJobs.at(threadIndex);
     // wait if job in progress
     std::unique_lock<std::mutex> lock(job.m_jobMutex);
-    job.m_jobCv.wait(lock, [&job]{return !job.m_jobInProgress;});
+    job.m_jobCv.wait(lock, [&job]{return !job.m_jobInProgress.load();});
     job.m_jobFunction = std::forward<std::function<void()>>(f);
     job.m_jobInProgress = true;
     job.m_jobCv.notify_all(); // notify to start job

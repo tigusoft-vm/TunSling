@@ -17,6 +17,11 @@ ThreadPool::ThreadPool(size_t numThreads)
     m_stopFlag(false),
     m_threadCounter(0)
 {
+    for (size_t i = 0; i < m_vThread.size(); i++) {
+        m_vThread.at(i) = std::thread([this, i] {
+            threadBody(i);
+        });
+    }
 }
 
 ThreadPool::~ThreadPool() {
