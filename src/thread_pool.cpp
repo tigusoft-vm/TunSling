@@ -28,9 +28,14 @@ ThreadPool::~ThreadPool() {
 }
 
 void ThreadPool::threadBody(size_t threadIndex) {
+    auto & job = m_vJobs.at(threadIndex);
     while(!m_stopFlag) {
-        
-        
+         // wait for start job
+        std::unique_lock<std::mutex> lock(job.m_jobMutex);
+        job.m_jobCv.wait(lock, [&job]{return job.m_jobInProgress.load();});
+        job.m_jobFunction(); // <== doing job
+        job.m_jobInProgress = false;
+        job.m_jobCv.notify_all();
     }
 }
 

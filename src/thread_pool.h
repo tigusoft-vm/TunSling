@@ -8,7 +8,6 @@
 #include <mutex>
 #include <condition_variable>
 
-// TODO: move to file
 namespace detail {
 struct ThreadPoolJob final {
     ThreadPoolJob();
