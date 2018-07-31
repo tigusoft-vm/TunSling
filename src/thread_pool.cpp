@@ -1,9 +1,23 @@
 #include "thread_pool.h"
 
+detail::ThreadPoolJob::ThreadPoolJob()
+:
+    m_jobMutex(),
+    m_jobCv(),
+    m_jobInProgress(false),
+    m_jobFunction()
+{
+}
+
 ThreadPool::ThreadPool(size_t numThreads) 
-: m_vThread(numThreads), m_vJobs(numThreads), m_stopFlag(false) {
-    
-};
+:
+    m_numberOfThreads(numThreads),
+    m_vThread(numThreads),
+    m_vJobs(numThreads),
+    m_stopFlag(false),
+    m_threadCounter(0)
+{
+}
 
 ThreadPool::~ThreadPool() {
     m_stopFlag = true;
@@ -11,11 +25,12 @@ ThreadPool::~ThreadPool() {
         if(thread.joinable())
             thread.join();
     }
-};
+}
 
-void ThreadPool::ThreadBody() {
+void ThreadPool::threadBody(size_t threadIndex) {
     while(!m_stopFlag) {
         
         
     }
-};
+}
+
