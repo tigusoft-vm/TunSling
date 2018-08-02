@@ -17,7 +17,7 @@ void node::run() {
     while (true) {
         std::vector<unsigned char> buffer(9000);
         size_t tun_read_size = m_tun->read_from_tun(buffer.data(), buffer.size());
-        m_thread_pool->addJob([=,buffer{move(buffer)}]() mutable {
+/*        m_thread_pool->addJob([=,buffer{move(buffer)}]() mutable {
                 size_t encypted_message_size =
                 m_crypto->encrypt(
                           buffer.data(), tun_read_size,
@@ -25,7 +25,8 @@ void node::run() {
                           buffer.data(), buffer.size());
                 std::lock_guard<std::mutex> lg(m_udp_mutex);
                 size_t udp_sended = m_udp->send(buffer.data(), encypted_message_size, dst_addr);
-        });
+        });*/
+        size_t udp_sended = m_udp->send(buffer.data(), tun_read_size, dst_addr); // XXX
     }
 }
 

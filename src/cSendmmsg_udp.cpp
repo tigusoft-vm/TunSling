@@ -16,8 +16,8 @@ size_t cSendmmsg_udp::send(const unsigned char * data, size_t data_size, const b
 	
 	my_addr.sin_family = AF_INET; // host byte order
 	my_addr.sin_port = htons( m_port ); // short, network byte order
-	my_addr.sin_addr.s_addr = *(adr.to_v4().to_bytes().data());//inet_addr( "192.168.1.105" );//INADDR_ANY; // uzupełnij moim adresem IP
-	memset( &( my_addr.sin_zero ), '\0', 8 ); // wyzeruj resztę struktury
+    my_addr.sin_addr.s_addr = *((int*)(adr.to_v4().to_bytes().data()));//inet_addr( "192.168.1.105" );//INADDR_ANY;
+    memset( &( my_addr.sin_zero ), '\0', 8 );
 	
 	msgvec.iov_base = msg_data.data();
 	msgvec.iov_len = msg_data.size();
@@ -38,9 +38,11 @@ size_t cSendmmsg_udp::send(const unsigned char * data, size_t data_size, const b
 	m_q_len++;
 	if( m_q_len == m_q_max_len ) {
 		size_t bytes_sended = 0;
-        sendmmsg(m_socket, msgs_q.hdr.data(), m_q_len, 0);
-        for(unsigned int i = 0; i <= m_q_len; i++ )
+        int ret = sendmmsg(m_socket, msgs_q.hdr.data(), m_q_len, 0);
+        for(unsigned int i = 0; i < m_q_len; i++ ) {
             bytes_sended += msgs_q.hdr[i].msg_len;
+            msgs_q.msg_data[i].clear();
+        }
         m_q_len = 0;
         return bytes_sended;
 	}

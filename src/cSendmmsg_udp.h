@@ -27,7 +27,7 @@ public:
 	virtual size_t recv(unsigned char * data, size_t data_size, const boost::asio::ip::address & adr, boost::asio::ip::address & adr_out);
 private:
 	int m_socket;
-	constexpr static unsigned int m_q_max_len = 10;
+    constexpr static unsigned int m_q_max_len = 10;
 	unsigned int m_q_len = 0;
     detail::msgs<m_q_max_len> msgs_q;
 	const unsigned short m_port = 9876;
