@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
 		cout << "Compression level was not set.\n";
 	}
 	
-    auto my_node = node::node_factory();
+    auto my_node = node::node_factory_Sendmmsg();
     my_node->run();
     return 0;
 }

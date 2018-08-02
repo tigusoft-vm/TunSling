@@ -13,7 +13,8 @@ class node final {
     public:
         node() = default;
         void run();
-        static std::unique_ptr<node> node_factory();
+        static std::unique_ptr<node> node_factory_Asio();
+        static std::unique_ptr<node> node_factory_Sendmmsg();
         node(node &&) = default;
     private:
         std::unique_ptr<boost::asio::io_service> m_io_service;
