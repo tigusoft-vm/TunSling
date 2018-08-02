@@ -6,6 +6,10 @@ cSendmmsg_udp::cSendmmsg_udp(int socket)
 	
 }
 
+cSendmmsg_udp::~cSendmmsg_udp() {
+	close(m_socket);
+}
+
 size_t cSendmmsg_udp::send(const unsigned char * data, size_t data_size, const boost::asio::ip::address & adr) {
 	
     struct sockaddr_in & my_addr = msgs_q.addr[m_q_len];
@@ -30,11 +34,6 @@ size_t cSendmmsg_udp::send(const unsigned char * data, size_t data_size, const b
 	msg.msg_iov = &msgvec;
 	msg.msg_iovlen = 1;
 
-   
-/*   mmsghdr msgs[size];
-   for( int i = 0; i < size; i++ )
-	   memcpy( &(msgs[i].msg_hdr), &msg, sizeof(msg) );
-*/   
 	m_q_len++;
 	if( m_q_len == m_q_max_len ) {
 		size_t bytes_sended = 0;

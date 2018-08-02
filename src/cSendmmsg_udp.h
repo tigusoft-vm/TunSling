@@ -21,7 +21,7 @@ class cSendmmsg_udp : public iUdp
 public:
 	cSendmmsg_udp(int socket);
 	/** Default destructor */
-	virtual ~cSendmmsg_udp() = default;
+	virtual ~cSendmmsg_udp();
 
 	virtual size_t send(const unsigned char * data, size_t data_size, const boost::asio::ip::address & adr);
 	virtual size_t recv(unsigned char * data, size_t data_size, const boost::asio::ip::address & adr, boost::asio::ip::address & adr_out);
