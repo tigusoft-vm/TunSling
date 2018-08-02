@@ -7,7 +7,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -g0 -O3 -march=native -Wall -
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -g3 -O0 -march=native -Wall -Wextra -pedantic")
 add_definitions("-DNDEBUG")
 
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED COMPONENTS system program_options)
 if(NOT Boost_FOUND)
     message(FATAL_ERROR "Boost not found!!!")
 endif()
