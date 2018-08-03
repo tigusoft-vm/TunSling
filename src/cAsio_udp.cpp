@@ -36,5 +36,6 @@ size_t cAsio_udp::recv(unsigned char * data, size_t data_size, const boost::asio
     m_sock.bind(receiver_endpoint);
     size_t ret = m_sock.receive_from(boost::asio::buffer(data, data_size), sender_endpoint);
 
+    adr_out = sender_endpoint.address();
     return ret;
 }
