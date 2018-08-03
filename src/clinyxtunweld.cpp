@@ -1,4 +1,5 @@
 #include "clinyxtunweld.h"
+#include <algorithm>
 
 cLinuxTunWeld::cLinuxTunWeld(std::unique_ptr<boost::asio::posix::stream_descriptor> && stream)
     :
@@ -21,7 +22,7 @@ size_t cLinuxTunWeld::read_from_tun(unsigned char *data, size_t data_size) {
     m_read_ready_bytes_in_weld -= readed_bytes;
     m_current_data_read_ready_ptr += readed_bytes;
     if (m_read_ready_bytes_in_weld < m_mtu) {
-        const size_t readed_bytes_in_weld = m_weld.size() - m_current_data_read_ready_ptr;
+        const size_t readed_bytes_in_weld = m_weld.size() - m_read_ready_bytes_in_weld;
         std::copy_n(m_weld.begin(), readed_bytes_in_weld, data);
         clear_weld();
         return readed_bytes_in_weld;
