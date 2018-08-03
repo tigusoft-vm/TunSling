@@ -13,8 +13,9 @@ int main(int argc, char *argv[])
 		desc.add_options()
 			("help", "Produce help message")
 			("address", po::value<std::string>()->required(), "Address (required)")
-			("threds", po::value<int>()->required(), "Number threds, if 0 then disable thredpool (required)")
+			("threads", po::value<int>()->required(), "Number threads, if 0 then disable threadpool (required)")
 			("UDP", po::value<std::string>()->required(), "UDP type (Asio, Sendmmsg) (required)")
+			("crypto", po::value<std::string>()->required(), "Crypto type (Secretbox, X_salsa_20, Empty) (required)")
 		;
 		
 		po::variables_map vm;
