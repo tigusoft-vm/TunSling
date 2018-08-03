@@ -16,6 +16,7 @@ int main(int argc, char *argv[])
 			("threads", po::value<int>()->required(), "Number threads, if 0 then disable threadpool (required)")
 			("UDP", po::value<std::string>()->required(), "UDP type (Asio, Sendmmsg) (required)")
 			("crypto", po::value<std::string>()->required(), "Crypto type (Secretbox, X_salsa_20, Empty) (required)")
+			("tun", po::value<std::string>()->required(), "Tun type (LinuxNormal, LinuxWeld) (required)")
 		;
 		
 		po::variables_map vm;

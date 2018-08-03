@@ -4,6 +4,7 @@
 #include "cX_salsa_20_wrapper.h"
 #include "ccryptoempty.h"
 #include "linuxtun.h"
+#include "clinyxtunweld.h"
 #include "cAsio_udp.h"
 #include "cSendmmsg_udp.h"
 #include <thread>
@@ -14,10 +15,17 @@ std::unique_ptr<node> cNode_factory::create_node( const boost::program_options::
 	ret->m_dst_addr = boost::asio::ip::address::from_string(vm["address"].as<std::string>());
 	
 	//Create tun
+	std::string strTun = vm["tun"].as<std::string>();
 	ret->m_io_service = std::make_unique<boost::asio::io_service>();
 	assert(ret->m_io_service != nullptr);
 	auto stream_descriptor = std::make_unique<boost::asio::posix::stream_descriptor>(*(ret->m_io_service));
-	ret->m_tun = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
+	if( strTun == "LinuxNormal" ) {
+		ret->m_tun = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
+	} else if ( strTun == "LinuxWeld" ) {
+		ret->m_tun = std::make_unique<cLinuxTunWeld>(std::move(stream_descriptor));
+	} else {
+		throw std::runtime_error( "Unknown tun version" );
+	}
 	assert(stream_descriptor == nullptr);
 	
 	//Create crypto

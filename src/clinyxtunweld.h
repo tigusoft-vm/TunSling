@@ -4,7 +4,7 @@
 #include "linuxtun.h"
 #include <vector>
 
-class cLinuxTunWeld : iTun {
+class cLinuxTunWeld : public iTun {
     public:
         cLinuxTunWeld(std::unique_ptr<boost::asio::posix::stream_descriptor> && stream);
         void set_ip(const boost::asio::ip::address & addr, uint32_t mtu) override;
