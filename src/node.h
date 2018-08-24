@@ -11,7 +11,7 @@
 
 class node final {
     public:
-        node() = default;
+        node(int tunMtu);
         void run();
         node(node &&) = default;
     private:
@@ -22,6 +22,8 @@ class node final {
         std::unique_ptr<iUdp> m_udp;
         std::mutex m_udp_mutex;
         std::unique_ptr<ThreadPool> m_thread_pool;
+
+        int m_tunMtu;
 
         friend class cNode_factory;
 };

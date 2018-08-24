@@ -10,7 +10,7 @@
 #include <thread>
 
 std::unique_ptr<node> cNode_factory::create_node( const boost::program_options::variables_map & vm ) {
-	std::unique_ptr<node> ret = std::make_unique<node>();
+	std::unique_ptr<node> ret = std::make_unique<node>( vm["tunMtu"].as<int>() );
 	
 	ret->m_dst_addr = boost::asio::ip::address::from_string(vm["address"].as<std::string>());
 	
