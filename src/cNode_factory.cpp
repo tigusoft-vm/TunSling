@@ -4,7 +4,7 @@
 #include "cX_salsa_20_wrapper.h"
 #include "ccryptoempty.h"
 #include "linuxtun.h"
-#include "clinyxtunweld.h"
+#include "clinuxtunweld.h"
 #include "cAsio_udp.h"
 #include "cSendmmsg_udp.h"
 #include <thread>

@@ -1,4 +1,4 @@
-#include "clinyxtunweld.h"
+#include "clinuxtunweld.h"
 #include <algorithm>
 
 cLinuxTunWeld::cLinuxTunWeld(std::unique_ptr<boost::asio::posix::stream_descriptor> && stream)
