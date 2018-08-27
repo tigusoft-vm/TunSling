@@ -8,17 +8,11 @@
 #include "cSendmmsg_udp.h"
 #include <thread>
 
-node::node(int tunMtu)
-:m_tunMtu(tunMtu)
-{
-}
-
 void node::run() {
 	std::array<unsigned char, crypto_secretbox_KEYBYTES> crypto_key;
 	crypto_key.fill(0b10101010);
 	assert(m_tun != nullptr);
 	assert(m_io_service != nullptr);
-    m_tun->set_ip(boost::asio::ip::address::from_string("fd44:1111:2222:3333:4444:5555:6666:7777"), m_tunMtu); // MTU
     cBufferManager bufferManager(100, 1500 * 20); // for possible weld data
 	while (true) {
 //        std::vector<unsigned char> buffer(1500 * 20); // for possible weld data
