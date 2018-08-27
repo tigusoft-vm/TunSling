@@ -3,8 +3,7 @@
 
 #include <boost/asio/ip/address.hpp>
 
-class iUdp
-{
+class iUdp {
     public:
         /** Default destructor */
         virtual ~iUdp() = default;

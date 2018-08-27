@@ -7,6 +7,7 @@
 #include "clinyxtunweld.h"
 #include "cAsio_udp.h"
 #include "cSendmmsg_udp.h"
+#include "empty_udp.h"
 #include <thread>
 
 std::unique_ptr<node> cNode_factory::create_node( const boost::program_options::variables_map & vm ) {
@@ -50,6 +51,8 @@ std::unique_ptr<node> cNode_factory::create_node( const boost::program_options::
 	} else if( strUdp == "Sendmmsg" ) {
 		int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 		ret->m_udp = std::make_unique<cSendmmsg_udp>(sockfd);
+	} else if( strUdp == "Empty" ) {
+		ret->m_udp = std::make_unique<empty_udp>();
 	} else
 		throw std::runtime_error( "Unknown UDP version" );
 
