@@ -27,7 +27,8 @@ std::unique_ptr<node> cNode_factory::create_node( const boost::program_options::
 	} else {
 		throw std::runtime_error( "Unknown tun version" );
 	}
-	ret->m_tun->set_ip(boost::asio::ip::address::from_string("fd44:1111:2222:3333:4444:5555:6666:7777"), vm["tunMtu"].as<int>()); // MTU
+	std::string tunAddr = vm["tunAddr"].as<std::string>() + ":1111:2222:3333:4444:5555:6666:7777";
+	ret->m_tun->set_ip(boost::asio::ip::address::from_string(tunAddr), vm["tunMtu"].as<int>()); // MTU
 	assert(stream_descriptor == nullptr);
 	
 	//Create crypto
