@@ -27,7 +27,7 @@ void linuxTun<TStreamDescriptor>::set_ip(const boost::asio::ip::address & addr, 
     ifreq  ifr; // the if request
     std::memset(&ifr, 0, sizeof(ifr));
     ifr.ifr_flags = IFF_TUN | IFF_NO_PI;
-    strncpy(ifr.ifr_name, "tuntest%d", IFNAMSIZ);
+    strncpy(ifr.ifr_name, "TunSling%d", IFNAMSIZ);
     int errcode_ioctl = ioctl(m_tun_fd, TUNSETIFF, static_cast<void *>(&ifr));
     if(errcode_ioctl == -1) throw std::runtime_error("ioctl error");
     t_syserr err;
