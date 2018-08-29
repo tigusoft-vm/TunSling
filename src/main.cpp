@@ -13,14 +13,15 @@ int main(int argc, char *argv[])
 		desc.add_options()
 			("help", "Produce help message")
 			("address", po::value<std::string>()->required(), "Address (required)")
-			("threads", po::value<int>()->required(), "Number threads, if 0 then disable threadpool (required)")
+			("threads", po::value<int>()->required(), "Number threads for crypto and send UDP, if 0 then disable threadpool (required)")
 			("UDP", po::value<std::string>()->required(), "UDP type (Asio, Sendmmsg, Empty) (required)")
 			("crypto", po::value<std::string>()->required(), "Crypto type (Secretbox, X_salsa_20, Empty) (required)")
 			("tun", po::value<std::string>()->required(), "Tun type (LinuxNormal, LinuxWeld) (required)")
 			("tunMtu", po::value<int>()->required(), "MTU size to set on our Tun (typial 9000, 8972, 1500, 1472) (required)")
 			("tunAddr", po::value<std::string>()->default_value("fd44"), "First two bytes to tun addres in hex (default: fd44)")
+			("tunMultiThread", po::value<int>()->implicit_value(2), "Number threads for tun (if not set then is 1 thread)")
 		;
-		
+
 		po::variables_map vm;
 		po::store(po::parse_command_line(argc, argv, desc), vm);
 		
