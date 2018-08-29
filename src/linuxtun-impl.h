@@ -54,4 +54,28 @@ size_t linuxTun<TStreamDescriptor>::send_to_tun(const unsigned char * data, size
     return m_tun_stream->write_some(boost::asio::buffer(data, data_size), ec);
 }
 
+template <class TStreamDescriptor>
+void linuxTun<TStreamDescriptor>::async_read_from_tun(unsigned char * data, size_t data_size, std::function<void(size_t)> handler) {
+    m_tun_stream->async_read_some(boost::asio::buffer(data, data_size), 
+                                 [handler](boost::system::error_code, size_t bytes_transferred) {
+                                     handler(bytes_transferred);
+                                 }
+    );
+}
+
+template <class TStreamDescriptor>
+void linuxTun<TStreamDescriptor>::async_write_to_tun(const unsigned char * data, size_t data_size, std::function<void(size_t)> handler) {
+    m_tun_stream->async_write_some(boost::asio::buffer(data, data_size), 
+                                 [handler](boost::system::error_code, size_t bytes_transferred) {
+                                     handler(bytes_transferred);
+                                 }
+    );
+}
+
+template <class TStreamDescriptor>
+void linuxTun<TStreamDescriptor>::run() {
+	boost::asio::io_service & io_service = m_tun_stream->get_io_service();
+	io_service.run();
+}
+
 #endif // LINUXTUNIMPL_H
