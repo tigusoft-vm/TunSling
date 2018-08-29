@@ -15,21 +15,29 @@ std::unique_ptr<node> cNode_factory::create_node( const boost::program_options::
 	
 	ret->m_dst_addr = boost::asio::ip::address::from_string(vm["address"].as<std::string>());
 	
-	//Create tun
 	std::string strTun = vm["tun"].as<std::string>();
 	ret->m_io_service = std::make_unique<boost::asio::io_service>();
 	assert(ret->m_io_service != nullptr);
 	auto stream_descriptor = std::make_unique<boost::asio::posix::stream_descriptor>(*(ret->m_io_service));
-	if( strTun == "LinuxNormal" ) {
-		ret->m_tun = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
-	} else if ( strTun == "LinuxWeld" ) {
-		ret->m_tun = std::make_unique<cLinuxTunWeld>(std::move(stream_descriptor));
-	} else {
-		throw std::runtime_error( "Unknown tun version" );
-	}
-	ret->m_tun->set_ip(boost::asio::ip::address::from_string("fd44:1111:2222:3333:4444:5555:6666:7777"), vm["tunMtu"].as<int>()); // MTU
-	assert(stream_descriptor == nullptr);
+	std::string tunAddr = vm["tunAddr"].as<std::string>() + ":1111:2222:3333:4444:5555:6666:7777";
 	
+	if( vm.count("tunMultiThread") ) {
+		// Create async tun
+		ret->m_tun_async = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
+		ret->m_tun_async->set_ip(boost::asio::ip::address::from_string(tunAddr), vm["tunMtu"].as<int>()); // MTU
+	} else {
+		//Create tun (sync)
+		if( strTun == "LinuxNormal" ) {
+			ret->m_tun = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
+		} else if ( strTun == "LinuxWeld" ) {
+			ret->m_tun = std::make_unique<cLinuxTunWeld>(std::move(stream_descriptor));
+		} else {
+			throw std::runtime_error( "Unknown tun version" );
+		}
+		ret->m_tun->set_ip(boost::asio::ip::address::from_string(tunAddr), vm["tunMtu"].as<int>()); // MTU
+	}
+	assert(stream_descriptor == nullptr);
+
 	//Create crypto
 	std::string strCrypto = vm["crypto"].as<std::string>();
 	if ( strCrypto == "Secretbox" ) {

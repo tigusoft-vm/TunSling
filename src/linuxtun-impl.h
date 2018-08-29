@@ -27,7 +27,7 @@ void linuxTun<TStreamDescriptor>::set_ip(const boost::asio::ip::address & addr, 
     ifreq  ifr; // the if request
     std::memset(&ifr, 0, sizeof(ifr));
     ifr.ifr_flags = IFF_TUN | IFF_NO_PI;
-    strncpy(ifr.ifr_name, "tuntest%d", IFNAMSIZ);
+    strncpy(ifr.ifr_name, "TunSling%d", IFNAMSIZ);
     int errcode_ioctl = ioctl(m_tun_fd, TUNSETIFF, static_cast<void *>(&ifr));
     if(errcode_ioctl == -1) throw std::runtime_error("ioctl error");
     t_syserr err;
@@ -52,6 +52,30 @@ template <class TStreamDescriptor>
 size_t linuxTun<TStreamDescriptor>::send_to_tun(const unsigned char * data, size_t data_size) {
     boost::system::error_code ec;
     return m_tun_stream->write_some(boost::asio::buffer(data, data_size), ec);
+}
+
+template <class TStreamDescriptor>
+void linuxTun<TStreamDescriptor>::async_read_from_tun(unsigned char * data, size_t data_size, std::function<void(size_t)> handler) {
+    m_tun_stream->async_read_some(boost::asio::buffer(data, data_size), 
+                                 [handler](boost::system::error_code, size_t bytes_transferred) {
+                                     handler(bytes_transferred);
+                                 }
+    );
+}
+
+template <class TStreamDescriptor>
+void linuxTun<TStreamDescriptor>::async_write_to_tun(const unsigned char * data, size_t data_size, std::function<void(size_t)> handler) {
+    m_tun_stream->async_write_some(boost::asio::buffer(data, data_size), 
+                                 [handler](boost::system::error_code, size_t bytes_transferred) {
+                                     handler(bytes_transferred);
+                                 }
+    );
+}
+
+template <class TStreamDescriptor>
+void linuxTun<TStreamDescriptor>::run() {
+	boost::asio::io_service & io_service = m_tun_stream->get_io_service();
+	io_service.run();
 }
 
 #endif // LINUXTUNIMPL_H
