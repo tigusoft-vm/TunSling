@@ -15,13 +15,13 @@ int main(int argc, char *argv[])
 		desc.add_options()
 			("help", "Produce help message")
 			("address", po::value<std::string>()->required(), "Address (required)")
-			("threads", po::value<int>()->default_value(0), "Number threads for crypto and send UDP, if 0 then disable threadpool")
+			("threads", po::value<int>()->default_value(0), "Number threads for crypto and send UDP or tun(if tunMultiThread is set), if 0 then disable threadpool")
 			("UDP", po::value<std::string>()->required(), "UDP type (Asio, Sendmmsg, Empty) (required)")
 			("crypto", po::value<std::string>()->required(), "Crypto type (Secretbox, X_salsa_20, Empty) (required)")
 			("tun", po::value<std::string>()->required(), "Tun type (LinuxNormal, LinuxWeld) (required)")
 			("tunMtu", po::value<int>()->required(), "MTU size to set on our Tun (typial 9000, 8972, 1500, 1472) (required)")
 			("tunAddr", po::value<std::string>()->default_value("fd44"), "First two bytes to tun addres in hex (default: fd44)")
-			("tunMultiThread", po::value<int>()->implicit_value(2), "Number threads for tun (if not set then is 1 thread)")
+			("tunMultiThread", "Multi threads for tun (if it is set then option 'threads' is for tun not for crypto and send UDP)")
 		;
 
 		po::variables_map vm;
@@ -31,22 +31,20 @@ int main(int argc, char *argv[])
 			cout << desc << "\n";
 			return 0;
 		}
-		
+
 		po::notify(vm);
 
-		if (vm.count("threads") && !vm["threads"].defaulted() 
-			&& vm.count("tunMultiThread"))
-			throw logic_error(string("Conflicting options '") 
-							  + "threads" + "' and '" + "tunMultiThread" + "'.");
-		
 		cNode_factory factory;
 		auto my_node = factory.create_node( vm );
-		my_node->run();
+		if( !vm.count("tunMultiThread") )
+			my_node->run();
+		else
+			my_node->run_async_tun( vm["threads"].as<int>() );
 	} catch (std::exception &e) {
 		std::cout << e.what() << "\n";
 	} catch ( ... ) {
 		std::cout << "Uknown error." << "\n";
 	}
-			
-    return 0;
+
+	return 0;
 }
