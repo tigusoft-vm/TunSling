@@ -6,12 +6,13 @@
 #include "iUdp.h"
 #include "thread_pool.h"
 #include <boost/asio/io_service.hpp>
+#include "cbuffermanager.h"
 #include <memory>
 #include <mutex>
 
 class node final {
     public:
-        node() = default;
+        node();
         void run(); ///< sync tun
         void run_async_tun(size_t number_of_tun_threads); ///< multiple tun threads
         node(node &&) = default;
@@ -24,10 +25,10 @@ class node final {
         std::unique_ptr<iUdp> m_udp;
         std::mutex m_udp_mutex;
         std::unique_ptr<ThreadPool> m_thread_pool;
-
+        cBufferManager m_buffer_manager;
         friend class cNode_factory;
 		
-		void async_read_from_tun_handler(size_t tun_read_size);
+		void async_read_from_tun_handler(size_t tun_read_size, cBuffer & buffer);
 };
 
 #endif // NODE_H

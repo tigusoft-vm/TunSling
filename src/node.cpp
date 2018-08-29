@@ -8,6 +8,12 @@
 #include "cSendmmsg_udp.h"
 #include <thread>
 
+node::node()
+	:
+	  m_buffer_manager(100, 1500*20) // for possible weld data
+{
+}
+
 void node::run() {
 	std::array<unsigned char, crypto_secretbox_KEYBYTES> crypto_key;
 	crypto_key.fill(0b10101010);
@@ -42,25 +48,17 @@ void node::run() {
 }
 
 void node::run_async_tun(size_t number_of_tun_threads) {
-	std::array<unsigned char, crypto_secretbox_KEYBYTES> crypto_key;
-	crypto_key.fill(0b10101010);
+
 	cBufferManager bufferManager(number_of_tun_threads, 1500 * 20); // for possible weld data, 1 buffer for 1 thread
 	std::vector<std::thread> thread_vector;
 	
 	for (size_t i = 0; i < number_of_tun_threads; i++) {
-		cBuffer & buffer = bufferManager.get_free_buffer_or_wait();
+		cBuffer & buffer = m_buffer_manager.get_free_buffer_or_wait();
 		m_tun_async->async_read_from_tun(buffer.data(), buffer.size(),
-			[&buffer, this, &crypto_key](size_t tun_read_size) {
-			size_t encypted_message_size =
-				m_crypto->encrypt(
-					  buffer.data(), tun_read_size,
-					  crypto_key.data(), crypto_key.size(),
-					  buffer.data(), buffer.size());
-				std::lock_guard<std::mutex> lg(m_udp_mutex);
-				size_t udp_sended = m_udp->send(buffer.data(), encypted_message_size, m_dst_addr);
+			[&buffer, this](size_t tun_read_size) {
+				async_read_from_tun_handler(tun_read_size, buffer);
 			}
 		);
-		
 	}
 	
 	for (size_t i = 0; i < number_of_tun_threads; i++) {
@@ -72,7 +70,22 @@ void node::run_async_tun(size_t number_of_tun_threads) {
 		thread.join();
 }
 
-void node::async_read_from_tun_handler(size_t tun_read_size)
-{
-	
+void node::async_read_from_tun_handler(size_t tun_read_size, cBuffer & buffer) {
+	std::array<unsigned char, crypto_secretbox_KEYBYTES> crypto_key;
+	crypto_key.fill(0b10101010);
+	size_t encypted_message_size =
+		m_crypto->encrypt(
+			  buffer.data(), tun_read_size,
+			  crypto_key.data(), crypto_key.size(),
+			  buffer.data(), buffer.size());
+		{
+			std::lock_guard<std::mutex> lg(m_udp_mutex);
+			size_t udp_sended = m_udp->send(buffer.data(), encypted_message_size, m_dst_addr);
+		}
+		// continue reading
+		m_tun_async->async_read_from_tun(buffer.data(), buffer.size(),
+			[&buffer, this, &crypto_key](size_t tun_read_size) {
+				async_read_from_tun_handler(tun_read_size, buffer);
+			}
+		);	
 }
