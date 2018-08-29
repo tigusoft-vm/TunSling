@@ -1,12 +1,14 @@
 #include <iostream>
 #include "cNode_factory.h"
 #include <boost/program_options.hpp>
+#include <sodium.h> // TODO
 
 using namespace std;
 namespace po = boost::program_options;
 
 int main(int argc, char *argv[])
 {
+	if (sodium_init() == -1) throw std::runtime_error("sodium_init error"); // TODO move this into crypto classes
 	try {
 		// Declare the supported options.
 		po::options_description desc("Allowed options");
