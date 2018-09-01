@@ -12,7 +12,7 @@ void linux_tun_multithread::set_ip(const boost::asio::ip::address &addr, uint32_
 }
 
 size_t linux_tun_multithread::read_from_tun(unsigned char *data, size_t data_size) {
-	
+	return 0;
 }
 
 size_t linux_tun_multithread::send_to_tun(const unsigned char *, size_t) {
