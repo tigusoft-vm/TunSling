@@ -7,7 +7,7 @@
 class iIpSetter {
 	public:
 		virtual ~iIpSetter() = default;
-		virtual void set_ip(const boost::asio::ip::address & adr, uint32_t mtu) = 0;
+		virtual void set_ip(const boost::asio::ip::address & adr, uint32_t mtu, bool only_reopen) = 0; ///< this also finalized TUN opening, use only_reopen for subsequent opens after 1st one for IFF_MULTI_QUEUE
 };
 
 class iTun : public iIpSetter {

@@ -22,25 +22,31 @@ linuxTun<TStreamDescriptor>::linuxTun(std::unique_ptr<TStreamDescriptor> && stre
 }
 
 template <class TStreamDescriptor>
-void linuxTun<TStreamDescriptor>::set_ip(const boost::asio::ip::address & addr, uint32_t mtu) {
+void linuxTun<TStreamDescriptor>::set_ip(const boost::asio::ip::address & addr, uint32_t mtu, bool only_reopen) {
     const int prefix_len = 16;
     std::cout << "Configuring tuntap options: IP address: " << addr << "/" << prefix_len << " MTU=" << mtu << '\n';
     ifreq  ifr; // the if request
     std::memset(&ifr, 0, sizeof(ifr));
     ifr.ifr_flags = IFF_TUN | IFF_NO_PI;
-    strncpy(ifr.ifr_name, "TunSling%d", IFNAMSIZ);
+    ifr.ifr_flags |= IFF_MULTI_QUEUE;
+    strncpy(ifr.ifr_name, "TunSlingM", IFNAMSIZ);
     int errcode_ioctl = ioctl(m_tun_fd, TUNSETIFF, static_cast<void *>(&ifr));
-    if(errcode_ioctl == -1) throw std::runtime_error("ioctl error");
-    t_syserr err;
-    auto binary_address = addr.to_v6().to_bytes();
-    err = NetPlatform_addAddress(ifr.ifr_name, binary_address.data(), prefix_len, Sockaddr_AF_INET6);
-    if (err.my_code != 0) throw std::runtime_error("NetPlatform_addAddress error");
-    err = NetPlatform_setMTU(ifr.ifr_name, mtu);
-    if (err.my_code != 0) throw std::runtime_error("NetPlatform_setMTU error");
-    assert(m_tun_stream != nullptr);
-    m_tun_stream->release();
-    m_tun_stream->assign(m_tun_fd);
-    std::cout << "Configuring tuntap options - done\n";
+    if(errcode_ioctl == -1) throw std::runtime_error("ioctl error (flags)");
+
+    if (!only_reopen) {
+			t_syserr err;
+			auto binary_address = addr.to_v6().to_bytes();
+			err = NetPlatform_addAddress(ifr.ifr_name, binary_address.data(), prefix_len, Sockaddr_AF_INET6);
+			if (err.my_code != 0) throw std::runtime_error("NetPlatform_addAddress error");
+			err = NetPlatform_setMTU(ifr.ifr_name, mtu);
+			if (err.my_code != 0) throw std::runtime_error("NetPlatform_setMTU error");
+			std::cout << "Configuring tuntap options - done\n";
+		}
+		else std::cout << "(only reopen)\n";
+		assert(m_tun_stream != nullptr);
+		m_tun_stream->release();
+		m_tun_stream->assign(m_tun_fd);
+		std::cout << "tun is configured\n";
 }
 
 template <class TStreamDescriptor>
@@ -75,6 +81,7 @@ void linuxTun<TStreamDescriptor>::async_write_to_tun(const unsigned char * data,
 
 template <class TStreamDescriptor>
 void linuxTun<TStreamDescriptor>::run() {
+	std::cout << "run() on io_service (for linux TUN)" << std::endl;
 	boost::asio::io_service & io_service = m_tun_stream->get_io_service();
 	io_service.run();
 }

@@ -22,6 +22,7 @@ int main(int argc, char *argv[])
 			("tunMtu", po::value<int>()->required(), "MTU size to set on our Tun (typial 9000, 8972, 1500, 1472) (required)")
 			("tunAddr", po::value<std::string>()->default_value("fd44"), "First two bytes to tun addres in hex (default: fd44)")
 			("tunMultiThread", "Multi threads for tun (if it is set then option 'threads' is for tun not for crypto and send UDP)")
+			("tunMultiFd", po::value<int>()->default_value(1), "Multi FD to use TUN as multiqueue.")
 		;
 
 		po::variables_map vm;

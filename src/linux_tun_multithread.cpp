@@ -7,8 +7,8 @@ linux_tun_multithread::linux_tun_multithread(std::unique_ptr<boost::asio::posix:
 {
 }
 
-void linux_tun_multithread::set_ip(const boost::asio::ip::address &addr, uint32_t mtu) {
-	m_linux_tun.set_ip(addr, mtu);
+void linux_tun_multithread::set_ip(const boost::asio::ip::address &addr, uint32_t mtu, bool only_reopen) {
+	m_linux_tun.set_ip(addr, mtu, only_reopen);
 }
 
 size_t linux_tun_multithread::read_from_tun(unsigned char *data, size_t data_size) {

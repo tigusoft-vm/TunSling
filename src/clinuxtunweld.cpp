@@ -7,8 +7,10 @@ cLinuxTunWeld::cLinuxTunWeld(std::unique_ptr<boost::asio::posix::stream_descript
 {
 }
 
-void cLinuxTunWeld::set_ip(const boost::asio::ip::address &addr, uint32_t mtu) {
-    m_linux_tun.set_ip(addr, mtu);
+void cLinuxTunWeld::set_ip(const boost::asio::ip::address &addr, uint32_t mtu, bool first_one) {
+	(void)(first_one);
+
+    m_linux_tun.set_ip(addr, mtu, first_one);
     m_weld.resize(mtu * 10); // we can contain up to 10 packets
     clear_weld();
     m_mtu = mtu;

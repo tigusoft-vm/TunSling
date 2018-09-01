@@ -18,16 +18,26 @@ std::unique_ptr<node> cNode_factory::create_node( const boost::program_options::
 	std::string strTun = vm["tun"].as<std::string>();
 	ret->m_io_service = std::make_unique<boost::asio::io_service>();
 	assert(ret->m_io_service != nullptr);
-	auto stream_descriptor = std::make_unique<boost::asio::posix::stream_descriptor>(*(ret->m_io_service));
 	std::string tunAddr = vm["tunAddr"].as<std::string>() + ":1111:2222:3333:4444:5555:6666:7777";
 	
-	if( vm.count("tunMultiThread") ) {
-		std::cout << "creating async tun\n";
-		// Create async tun
-		ret->m_tun_async = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
-		ret->m_tun_async->set_ip(boost::asio::ip::address::from_string(tunAddr), vm["tunMtu"].as<int>()); // MTU
+	const auto tunMT = vm.at("threads").as<int>();
+	const auto tunFD = vm.at("tunMultiFd").as<int>();
+	const bool tunMTEnabled = vm.count("tunMultiThread");
+	if( tunMTEnabled ) {
+		std::cout << "creating async tun, threads = " << tunMT << "\n";
+		std::cout << "creating async tun, FDs     = " << tunFD << "\n";
+		// Create async tuns
+		for (int i=0; i<tunFD; ++i) {
+			auto stream_descriptor = std::make_unique<boost::asio::posix::stream_descriptor>(*(ret->m_io_service));
+			auto tun = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
+			bool only_reopen = (i!=0);
+			tun->set_ip(boost::asio::ip::address::from_string(tunAddr), vm["tunMtu"].as<int>(), only_reopen); // MTU (msgsize actually)
+			ret->m_tun_async.push_back( std::move( tun ));
+		}
+		std::cout << "done: created " << ret->m_tun_async.size() << " TUN(s).\n";
 	} else {
 		//Create tun (sync)
+		auto stream_descriptor = std::make_unique<boost::asio::posix::stream_descriptor>(*(ret->m_io_service));
 		std::cout << "creating blocking tun\n";
 		if( strTun == "LinuxNormal" ) {
 			ret->m_tun = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
@@ -36,9 +46,9 @@ std::unique_ptr<node> cNode_factory::create_node( const boost::program_options::
 		} else {
 			throw std::runtime_error( "Unknown tun version" );
 		}
-		ret->m_tun->set_ip(boost::asio::ip::address::from_string(tunAddr), vm["tunMtu"].as<int>()); // MTU
+		ret->m_tun->set_ip(boost::asio::ip::address::from_string(tunAddr), vm["tunMtu"].as<int>(), false); // MTU
+		assert(stream_descriptor == nullptr);
 	}
-	assert(stream_descriptor == nullptr);
 
 	//Create crypto
 	std::string strCrypto = vm["crypto"].as<std::string>();

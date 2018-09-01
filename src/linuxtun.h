@@ -9,7 +9,7 @@ template<class TStreamDescriptor = boost::asio::posix::stream_descriptor>
 class linuxTun final : public iTun, public iTunAsync {
     public:
         linuxTun(std::unique_ptr<TStreamDescriptor> && stream);
-        void set_ip(const boost::asio::ip::address & addr, uint32_t mtu) override;
+        void set_ip(const boost::asio::ip::address & addr, uint32_t mtu, bool only_reopen) override;
         size_t read_from_tun(unsigned char * data, size_t data_size) override;
         size_t send_to_tun(const unsigned char * data, size_t data_size) override;
         void async_read_from_tun(unsigned char * data, size_t data_size, std::function<void(size_t)> handler) override;
