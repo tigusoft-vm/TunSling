@@ -22,11 +22,13 @@ std::unique_ptr<node> cNode_factory::create_node( const boost::program_options::
 	std::string tunAddr = vm["tunAddr"].as<std::string>() + ":1111:2222:3333:4444:5555:6666:7777";
 	
 	if( vm.count("tunMultiThread") ) {
+		std::cout << "creating async tun\n";
 		// Create async tun
 		ret->m_tun_async = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
 		ret->m_tun_async->set_ip(boost::asio::ip::address::from_string(tunAddr), vm["tunMtu"].as<int>()); // MTU
 	} else {
 		//Create tun (sync)
+		std::cout << "creating blocking tun\n";
 		if( strTun == "LinuxNormal" ) {
 			ret->m_tun = std::make_unique<linuxTun<>>(std::move(stream_descriptor));
 		} else if ( strTun == "LinuxWeld" ) {
