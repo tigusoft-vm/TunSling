@@ -3,6 +3,9 @@
 #include <boost/program_options.hpp>
 #include <sodium.h> // TODO
 
+
+#include "main_book.hpp"
+
 using namespace std;
 namespace po = boost::program_options;
 
@@ -14,6 +17,7 @@ int main(int argc, char *argv[])
 		po::options_description desc("Allowed options");
 		desc.add_options()
 			("help", "Produce help message")
+			("book", "Completly other version of program - ByTheBook engine. Disregards (most of?) other options")
 			("address", po::value<std::string>()->required(), "Address (required)")
 			("threads", po::value<int>()->default_value(0), "Number threads for crypto and send UDP or tun(if tunMultiThread is set), if 0 then disable threadpool")
 			("UDP", po::value<std::string>()->required(), "UDP type (Asio, Sendmmsg, Empty) (required)")
@@ -30,6 +34,10 @@ int main(int argc, char *argv[])
 		if (vm.count("help")) {
 			cout << desc << "\n";
 			return 0;
+		}
+
+		if (vm.count("book")) {
+			return main_engine_book();
 		}
 
 		po::notify(vm);
